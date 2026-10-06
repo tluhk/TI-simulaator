@@ -84,3 +84,116 @@
 .guided-navigation{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #edf0ed;margin-top:24px;padding-top:17px}
 @media(max-width:950px){.topbar-right{gap:9px}.top-note{display:none}.guided-learning{padding-top:48px}.guided-intro h1{font-size:40px}}
 @media(max-width:700px){.mode-switch button{padding:5px 7px;font-size:8px}.mode-switch button:first-child{max-width:93px;white-space:normal;line-height:1.15}.guided-learning{padding:38px 0 55px}.guided-intro h1{font-size:34px}.guided-path{grid-template-columns:1fr}.guided-path button{padding:7px 9px}.guided-card{padding:22px 17px 17px}.guided-stage{min-height:0}.guided-occurrences{grid-template-columns:1fr}.guided-probability{grid-template-columns:82px 1fr 45px}.guided-answer-buttons{flex-direction:column}.guided-answer-buttons button{width:100%}}
+
+
+/* Desktop readability improvements */
+@media(min-width:951px){
+  .page-shell{padding:0 72px}
+  .brand{font-size:16px}
+  .brand small{font-size:10px}
+  .top-note{font-size:13px}
+  .language-picker{font-size:11px}
+  .language-picker select{font-size:12px;padding:8px 26px 8px 10px}
+  .mode-switch button{font-size:11px;padding:8px 12px}
+
+  .hero-copy>p{font-size:16px;line-height:1.75}
+  .text-link{font-size:14px}
+  .eyebrow{font-size:11px}
+  .hero-bottom{font-size:10px}
+  .section-heading>p{font-size:13px}
+  .section-heading h2{font-size:40px}
+
+  .panel{padding:31px 33px}
+  .training-panel{padding:31px 34px 24px}
+  .step-index{font-size:12px}
+  .step-title h3{font-size:18px}
+  .step-title p{font-size:14px;line-height:1.6}
+  .explain-copy{font-size:13px;line-height:1.7}
+  .field-label,.dataset-picker label{font-size:11px}
+  .dataset-picker select,.generator-controls select{font-size:13px}
+  .training-panel textarea{font-size:14px;line-height:1.7}
+  .stat strong{font-size:16px}
+  .stat span{font-size:11px}
+  .button{font-size:13px;padding:11px 16px}
+  .check-row{font-size:13px}
+  .mini-tag{font-size:9px}
+  .token{font-size:12px;padding:6px 9px}
+  .token-legend{font-size:11px}
+  .choice-desc strong{font-size:13px}
+  .choice-desc small{font-size:11px}
+  .model-note{font-size:11px}
+  .explore-controls>label{font-size:11px}
+  .input-with-icon input,.input-row input,.generator-controls>input{font-size:13px}
+  .preview-label{font-size:10px}
+  .context-pills span{font-size:11px}
+  .micro-copy{font-size:11px}
+  .distribution-token{font-size:12px}
+  .distribution-count{font-size:11px}
+  .distribution-pct{font-size:12px}
+  .empty-state strong{font-size:13px}
+  .empty-state p{font-size:11px}
+  .evidence-heading strong{font-size:12px}
+  .evidence-heading small{font-size:11px}
+  .evidence-examples p{font-size:12px}
+  .result-summary{font-size:11px}
+  .result-model{font-size:10px}
+  .calculation{font-size:11px}
+  .comparison-card-head span{font-size:11px}
+  .comparison-card-head small{font-size:9px}
+  .comparison-row{font-size:11px}
+  .comparison-empty{font-size:11px}
+  .range-label label{font-size:10px}
+  .range-label>span{font-size:12px}
+  .output-topline{font-size:10px}
+  .output-state{font-size:9px}
+  .generated-text{font-size:15px}
+  .comparison-title{font-size:10px}
+  .comparison-title small{font-size:10px}
+  .temp-legend{font-size:10px}
+  .temp-token{font-size:11px}
+  .temp-value{font-size:10px}
+  .distribution-empty{font-size:12px}
+  .history-heading p{font-size:11px}
+  .history-count{font-size:10px}
+  .history-empty{font-size:11px}
+  .history-number{font-size:11px}
+  .history-context small,.history-selected small{font-size:9px}
+  .history-context strong,.history-selected strong{font-size:11px}
+  .history-probability{font-size:11px}
+  .history-detail>span{font-size:10px}
+  .explanation-copy>p{font-size:14px;line-height:1.8}
+  .notice p{font-size:11px}
+  .explanation-copy .truth-note{font-size:11px}
+  .flow-heading{font-size:10px}
+  .flow-step{font-size:12px}
+  .flow-index,.flow-step i,.flow-return,.flow-return span{font-size:10px}
+  .footer>span,.footer>a:last-child{font-size:11px}
+
+  .guided-intro>p{font-size:15px}
+  .guided-path button{font-size:12px;padding:11px 10px}
+  .guided-path button span{font-size:10px;width:22px;height:22px}
+  .guided-step-count{font-size:10px}
+  .guided-card-heading h2{font-size:26px}
+  .guided-card-heading p{font-size:14px}
+  .guided-source small,.guided-label,.guided-context-box small,.guided-formula small{font-size:10px}
+  .guided-source p{font-size:17px}
+  .guided-token{font-size:14px}
+  .guided-context-box div span,.guided-context-inline span{font-size:13px}
+  .guided-context-box div strong,.guided-context-inline strong{font-size:14px}
+  .guided-found{font-size:12px}
+  .guided-context-token,.guided-occurrence strong{font-size:12px}
+  .guided-table-head{font-size:10px}
+  .guided-count-table strong{font-size:13px}
+  .guided-count-table b{font-size:15px}
+  .guided-total{font-size:12px}
+  .guided-probability strong{font-size:13px}
+  .guided-probability span{font-size:11px}
+  .guided-probability>b{font-size:16px}
+  .guided-formula strong{font-size:12px}
+  .guided-question h3{font-size:20px}
+  .guided-question>small{font-size:11px}
+  .guided-answer-buttons button{font-size:13px}
+  .guided-feedback{font-size:12px}
+  .guided-summary strong{font-size:13px}
+  .guided-summary p{font-size:11px}
+}
