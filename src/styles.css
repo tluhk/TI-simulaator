@@ -197,3 +197,35 @@
   .guided-summary strong{font-size:13px}
   .guided-summary p{font-size:11px}
 }
+
+
+/* Word frequency statistics */
+.word-frequency{margin-top:22px;padding-top:18px;border-top:1px solid #edf0ed}
+.word-frequency-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:12px}
+.word-frequency-heading strong{display:block;font-size:12px;color:#3f5149}
+.word-frequency-heading p{margin:4px 0 0;color:#87938d;font-size:10px;line-height:1.5}
+.word-frequency-heading>span{white-space:nowrap;color:#8a9690;font:9px 'DM Mono',monospace}
+.word-frequency-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;row-gap:6px}
+.word-frequency-row{display:grid;grid-template-columns:22px minmax(62px,110px) 1fr 58px;align-items:center;gap:8px;padding:4px 0}
+.word-rank{color:#a1aca6;font:9px 'DM Mono',monospace}
+.word-frequency-row>strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#43564e;font:10px 'DM Mono',monospace;font-weight:500}
+.word-frequency-bar{height:7px;background:#edf1ed;border-radius:8px;overflow:hidden}
+.word-frequency-bar i{display:block;height:100%;min-width:2px;background:#75b398;border-radius:8px}
+.word-frequency-count{display:flex;justify-content:flex-end;align-items:baseline;gap:5px;color:#46745f;font:10px 'DM Mono',monospace}
+.word-frequency-count small{color:#98a29d;font-size:8px}
+.word-frequency-empty{margin:0;color:#919c96;font-size:10px}
+@media(min-width:951px){
+  .word-frequency-heading strong{font-size:15px}
+  .word-frequency-heading p{font-size:12px}
+  .word-frequency-heading>span{font-size:11px}
+  .word-frequency-row{grid-template-columns:26px minmax(78px,130px) 1fr 72px}
+  .word-rank{font-size:10px}
+  .word-frequency-row>strong{font-size:12px}
+  .word-frequency-count{font-size:12px}
+  .word-frequency-count small{font-size:10px}
+  .word-frequency-empty{font-size:12px}
+}
+@media(max-width:700px){
+  .word-frequency-heading{flex-direction:column;gap:7px}
+  .word-frequency-grid{grid-template-columns:1fr}
+}
