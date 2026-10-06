@@ -1070,23 +1070,41 @@ function App() {
             </div>
             {wordStats.items.length ? (
               <div className="word-frequency-grid">
-                {wordStats.items.map((item, index) => (
-                  <div className="word-frequency-row" key={item.token}>
-                    <span className="word-rank">{index + 1}</span>
-                    <strong title={item.token}>{item.token}</strong>
-                    <span className="word-frequency-bar">
-                      <i
-                        style={{
-                          width: `${wordStats.maxCount ? (item.count / wordStats.maxCount) * 100 : 0}%`,
-                        }}
-                      />
-                    </span>
-                    <span className="word-frequency-count">
-                      {item.count}×
-                      <small>{fmt(item.share)}</small>
-                    </span>
-                  </div>
-                ))}
+                {[
+                  wordStats.items.slice(
+                    0,
+                    Math.ceil(wordStats.items.length / 2),
+                  ),
+                  wordStats.items.slice(
+                    Math.ceil(wordStats.items.length / 2),
+                  ),
+                ].map((column, columnIndex) => {
+                  const offset =
+                    columnIndex === 0
+                      ? 0
+                      : Math.ceil(wordStats.items.length / 2);
+                  return (
+                    <div className="word-frequency-column" key={columnIndex}>
+                      {column.map((item, index) => (
+                        <div className="word-frequency-row" key={item.token}>
+                          <span className="word-rank">{offset + index + 1}</span>
+                          <strong title={item.token}>{item.token}</strong>
+                          <span className="word-frequency-bar">
+                            <i
+                              style={{
+                                width: `${wordStats.maxCount ? (item.count / wordStats.maxCount) * 100 : 0}%`,
+                              }}
+                            />
+                          </span>
+                          <span className="word-frequency-count">
+                            <span>{item.count}×</span>
+                            <small>{fmt(item.share)}</small>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="word-frequency-empty">{t.wordStatsEmpty}</p>
