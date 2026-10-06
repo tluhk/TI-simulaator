@@ -52,6 +52,11 @@ const translations = {
     addText: "Lisa ülal tekst, et näha selle tokeneid.",
     word: "sõnatoken",
     punctuation: "kirjavahemärk",
+    wordStats: "Sagedasemad sõnad",
+    wordStatsHelp:
+      "20 kõige sagedamini esinevat sõnatokenit analüüsitud treeningtekstis.",
+    wordStatsEmpty: "Sõnatokeneid ei leitud.",
+    times: "korda",
     contextLength: "Konteksti pikkus",
     contextQuestion: "Mitut eelmist tokenit peaks mudel arvestama?",
     contextExplain:
@@ -184,6 +189,11 @@ const translations = {
     addText: "Add text above to see its tokens.",
     word: "word token",
     punctuation: "punctuation",
+    wordStats: "Most frequent words",
+    wordStatsHelp:
+      "The 20 most frequent word tokens in the analyzed training text.",
+    wordStatsEmpty: "No word tokens found.",
+    times: "times",
     contextLength: "Context length",
     contextQuestion: "How many previous tokens should the model consider?",
     contextExplain:
@@ -674,6 +684,27 @@ function App() {
     () => buildModel(analyzedText, contextLength, ignoreCase),
     [analyzedText, contextLength, ignoreCase],
   );
+  const wordStats = useMemo(() => {
+    const counts = new Map<string, number>();
+    let total = 0;
+    for (const token of tokens) {
+      if (!/^[\p{L}\p{M}]+(?:['’][\p{L}\p{M}]+)*$/u.test(token)) continue;
+      counts.set(token, (counts.get(token) ?? 0) + 1);
+      total += 1;
+    }
+    const items = [...counts.entries()]
+      .map(([token, count]) => ({
+        token,
+        count,
+        share: total ? count / total : 0,
+      }))
+      .sort(
+        (a, b) =>
+          b.count - a.count || a.token.localeCompare(b.token, language),
+      )
+      .slice(0, 20);
+    return { items, total, maxCount: items[0]?.count ?? 0 };
+  }, [tokens, language]);
   const normalizedExplore = splitInput(exploreContext, ignoreCase);
   const explorePredictions = getPredictions(model, normalizedExplore);
   const predictionTokens = splitInput(predictionInput, ignoreCase);
@@ -1028,6 +1059,38 @@ function App() {
             <span>
               <i className="legend-punct" /> {t.punctuation}
             </span>
+          </div>
+          <div className="word-frequency">
+            <div className="word-frequency-heading">
+              <div>
+                <strong>{t.wordStats}</strong>
+                <p>{t.wordStatsHelp}</p>
+              </div>
+              <span>{wordStats.total} {language === "et" ? "sõnatokenit" : "word tokens"}</span>
+            </div>
+            {wordStats.items.length ? (
+              <div className="word-frequency-grid">
+                {wordStats.items.map((item, index) => (
+                  <div className="word-frequency-row" key={item.token}>
+                    <span className="word-rank">{index + 1}</span>
+                    <strong title={item.token}>{item.token}</strong>
+                    <span className="word-frequency-bar">
+                      <i
+                        style={{
+                          width: `${wordStats.maxCount ? (item.count / wordStats.maxCount) * 100 : 0}%`,
+                        }}
+                      />
+                    </span>
+                    <span className="word-frequency-count">
+                      {item.count}×
+                      <small>{fmt(item.share)}</small>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="word-frequency-empty">{t.wordStatsEmpty}</p>
+            )}
           </div>
         </section>
         <section className="panel config-panel">
