@@ -600,6 +600,47 @@ function GuidedLearning({
   );
 }
 
+function chooseExampleContext(
+  sourceText: string,
+  length: number,
+  ignoreCapitalization: boolean,
+): string[] {
+  const sourceTokens = tokenize(sourceText, ignoreCapitalization);
+  if (!sourceTokens.length) return [];
+  if (sourceTokens.length <= length) return sourceTokens;
+
+  const contexts = new Map<
+    string,
+    { context: string[]; continuations: Set<string>; occurrences: number }
+  >();
+
+  for (let i = length; i < sourceTokens.length; i += 1) {
+    const context = sourceTokens.slice(i - length, i);
+    const key = JSON.stringify(context);
+    const entry = contexts.get(key) ?? {
+      context,
+      continuations: new Set<string>(),
+      occurrences: 0,
+    };
+    entry.continuations.add(sourceTokens[i]);
+    entry.occurrences += 1;
+    contexts.set(key, entry);
+  }
+
+  const candidates = [...contexts.values()];
+  candidates.sort((a, b) => {
+    const aHasPunctuation = a.context.some((token) => !/^[\p{L}\p{M}\p{N}]/u.test(token));
+    const bHasPunctuation = b.context.some((token) => !/^[\p{L}\p{M}\p{N}]/u.test(token));
+    if (aHasPunctuation !== bHasPunctuation) return aHasPunctuation ? 1 : -1;
+    if (b.continuations.size !== a.continuations.size) {
+      return b.continuations.size - a.continuations.size;
+    }
+    return b.occurrences - a.occurrences;
+  });
+
+  return candidates[0]?.context ?? sourceTokens.slice(0, length);
+}
+
 function App() {
   const [language, setLanguage] = useState<"et" | "en">("et");
   const [mode, setMode] = useState<"guided" | "lab">("guided");
@@ -655,9 +696,19 @@ function App() {
     0,
   );
 
+  function applyExampleInputs(sourceText: string, length = contextLength) {
+    const context = chooseExampleContext(sourceText, length, ignoreCase);
+    const phrase = context.join(" ");
+    setExploreContext(phrase);
+    setPredictionInput(phrase);
+    setGeneratedInput(phrase);
+  }
+
   function selectExample(index: number) {
-    setText(examples[index].text);
-    setAnalyzedText(examples[index].text);
+    const nextText = examples[index].text;
+    setText(nextText);
+    setAnalyzedText(nextText);
+    applyExampleInputs(nextText);
     setActivePattern(null);
     setGenerationTokens([]);
     setHistory([]);
@@ -926,6 +977,7 @@ function App() {
               className="button button-primary"
               onClick={() => {
                 setAnalyzedText(text);
+                applyExampleInputs(text);
                 setActivePattern(null);
                 resetGeneration();
               }}
@@ -998,6 +1050,7 @@ function App() {
                   checked={contextLength === count}
                   onChange={() => {
                     setContextLength(count);
+                    applyExampleInputs(analyzedText, count);
                     setActivePattern(null);
                     resetGeneration();
                   }}
@@ -1047,8 +1100,8 @@ function App() {
                 }}
                 placeholder={
                   language === "et"
-                    ? "Näiteks: Mari läks"
-                    : "For example: Mari läks"
+                    ? `Näiteks: ${chooseExampleContext(analyzedText, contextLength, ignoreCase).join(" ")}`
+                    : `For example: ${chooseExampleContext(analyzedText, contextLength, ignoreCase).join(" ")}`
                 }
               />
             </div>
