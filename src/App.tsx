@@ -281,8 +281,328 @@ const translations = {
   },
 } as const;
 
+
+function GuidedLearning({
+  language,
+  onOpenLab,
+}: {
+  language: "et" | "en";
+  onOpenLab: () => void;
+}) {
+  const [step, setStep] = useState(0);
+  const [answer, setAnswer] = useState<"kooli" | "koju" | null>(null);
+
+  const copy =
+    language === "et"
+      ? {
+          eyebrow: "ALUSTA SIIT",
+          title: "Kuidas tekib järgmise tokeni ennustus?",
+          intro:
+            "Võtame ühe väga väikese näite ja liigume samm-sammult. Igas etapis lisame ainult ühe uue idee.",
+          path: ["Tokenid", "Leia muster", "Loenda", "Tõenäosus", "Ennusta"],
+          stepTitles: [
+            "1. Tekst jagatakse tokeniteks",
+            "2. Otsime sama konteksti",
+            "3. Loendame, mis tuli järgmisena",
+            "4. Loendustest saavad tõenäosused",
+            "5. Nüüd oskame ennustada",
+          ],
+          stepBodies: [
+            "Token on väike tekstiosa, millega mudel töötab. Selles simulaatoris on sõnad ja kirjavahemärgid eraldi tokenid.",
+            "Tahame teada, mis võiks tulla pärast sõnu „Mari läks“. Otsime treeningtekstist kõik kohad, kus need kaks tokenit esinevad koos.",
+            "Leidsime kolm vastet. Nüüd vaatame ainult seda, milline token tuli iga vaste järel.",
+            "Tõenäosus saadakse väga lihtsalt: mitu korda konkreetne jätk esines, jagatud kõigi vastete arvuga.",
+            "Mudel ei tea, kuhu Mari tegelikult läks. Ta kasutab ainult treeningtekstis nähtud statistikat.",
+          ],
+          training: "Meie treeningtekst",
+          tokensLabel: "Sama tekst tokenitena",
+          context: "Kontekst, millele otsime jätku",
+          found: "Leidsime treeningtekstist 3 vastet",
+          continuation: "Järgmine token",
+          count: "Mitu korda?",
+          total: "Kokku 3 vastet",
+          probability: "Tõenäosus",
+          question: "Milline token on pärast „Mari läks“ kõige tõenäolisem?",
+          choose: "Vali vastus",
+          correct:
+            "Õige. „kooli“ esines 2 korda 3-st, seega on selle tõenäosus umbes 67%.",
+          possible:
+            "„koju“ on võimalik, kuid mitte kõige tõenäolisem. See esines 1 kord 3-st ehk umbes 33%.",
+          summary:
+            "Põhiahel on nüüd nähtav: tekst → tokenid → sama konteksti vasted → loendused → tõenäosused → järgmise tokeni valik.",
+          lab: "Katseta nüüd ise",
+          labHelp:
+            "Laboris saad kasutada oma teksti, muuta konteksti pikkust ja uurida genereerimist.",
+          previous: "Tagasi",
+          next: "Edasi",
+          of: "samm",
+        }
+      : {
+          eyebrow: "START HERE",
+          title: "How is the next-token prediction created?",
+          intro:
+            "We will use one tiny example and move step by step. Each stage introduces only one new idea.",
+          path: ["Tokens", "Find pattern", "Count", "Probability", "Predict"],
+          stepTitles: [
+            "1. Text is split into tokens",
+            "2. Find the same context",
+            "3. Count what came next",
+            "4. Counts become probabilities",
+            "5. Now we can predict",
+          ],
+          stepBodies: [
+            "A token is a small piece of text the model works with. In this simulator, words and punctuation are separate tokens.",
+            "We want to know what may come after “Mari läks”. We find every place in the training text where those two tokens occur together.",
+            "We found three matches. Now we only look at which token followed each match.",
+            "The probability is simple: how many times a continuation appeared, divided by the total number of matches.",
+            "The model does not know where Mari really went. It only uses the statistics it observed in the training text.",
+          ],
+          training: "Our training text",
+          tokensLabel: "The same text as tokens",
+          context: "Context we want to continue",
+          found: "We found 3 matches in the training text",
+          continuation: "Next token",
+          count: "How many times?",
+          total: "3 matches in total",
+          probability: "Probability",
+          question: "Which token is most likely after “Mari läks”?",
+          choose: "Choose an answer",
+          correct:
+            "Correct. “kooli” appeared 2 times out of 3, so its probability is about 67%.",
+          possible:
+            "“koju” is possible, but it is not the most likely. It appeared 1 time out of 3, or about 33%.",
+          summary:
+            "The core chain is now visible: text → tokens → matching contexts → counts → probabilities → next-token selection.",
+          lab: "Experiment yourself",
+          labHelp:
+            "In the lab you can use your own text, change context length, and explore generation.",
+          previous: "Back",
+          next: "Next",
+          of: "step",
+        };
+
+  const tokens = [
+    "Mari",
+    "läks",
+    "kooli",
+    ".",
+    "Mari",
+    "läks",
+    "koju",
+    ".",
+    "Mari",
+    "läks",
+    "kooli",
+    ".",
+  ];
+  const steps = copy.stepTitles;
+
+  function goTo(nextStep: number) {
+    setStep(Math.max(0, Math.min(steps.length - 1, nextStep)));
+    setAnswer(null);
+  }
+
+  return (
+    <section className="guided-learning" id="top">
+      <div className="guided-intro">
+        <div className="eyebrow">
+          <span>{copy.eyebrow}</span>
+          <span className="eyebrow-line" />
+        </div>
+        <h1>{copy.title}</h1>
+        <p>{copy.intro}</p>
+      </div>
+
+      <div className="guided-path" aria-label={language === "et" ? "Õpiteekond" : "Learning path"}>
+        {copy.path.map((item, index) => (
+          <button
+            type="button"
+            className={index === step ? "active" : index < step ? "done" : ""}
+            onClick={() => goTo(index)}
+            key={item}
+          >
+            <span>{index + 1}</span>
+            {item}
+          </button>
+        ))}
+      </div>
+
+      <div className="guided-card">
+        <div className="guided-card-heading">
+          <div>
+            <span className="guided-step-count">
+              {step + 1} / {steps.length} {copy.of}
+            </span>
+            <h2>{copy.stepTitles[step]}</h2>
+            <p>{copy.stepBodies[step]}</p>
+          </div>
+        </div>
+
+        {step === 0 && (
+          <div className="guided-stage">
+            <div className="guided-source">
+              <small>{copy.training}</small>
+              <p>Mari läks kooli. Mari läks koju. Mari läks kooli.</p>
+            </div>
+            <div className="guided-arrow">↓</div>
+            <small className="guided-label">{copy.tokensLabel}</small>
+            <div className="guided-tokens">
+              {tokens.map((token, index) => (
+                <span
+                  className={token === "." ? "guided-token punctuation" : "guided-token"}
+                  key={`${token}-${index}`}
+                >
+                  {token}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="guided-stage">
+            <div className="guided-context-box">
+              <small>{copy.context}</small>
+              <div>
+                <span>Mari</span>
+                <span>läks</span>
+                <strong>?</strong>
+              </div>
+            </div>
+            <p className="guided-found">{copy.found}</p>
+            <div className="guided-occurrences">
+              {["kooli", "koju", "kooli"].map((next, index) => (
+                <div className="guided-occurrence" key={`${next}-${index}`}>
+                  <span className="guided-context-token">Mari</span>
+                  <span className="guided-context-token">läks</span>
+                  <span className="guided-occurrence-arrow">→</span>
+                  <strong>{next}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="guided-stage">
+            <div className="guided-context-inline">
+              <span>Mari</span><span>läks</span><strong>→</strong>
+            </div>
+            <div className="guided-count-table">
+              <div className="guided-table-head">
+                <span>{copy.continuation}</span>
+                <span>{copy.count}</span>
+              </div>
+              <div>
+                <strong>kooli</strong>
+                <span className="count-dots"><i /><i /></span>
+                <b>2</b>
+              </div>
+              <div>
+                <strong>koju</strong>
+                <span className="count-dots"><i /></span>
+                <b>1</b>
+              </div>
+            </div>
+            <p className="guided-total">{copy.total}</p>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="guided-stage">
+            <div className="guided-probability-list">
+              <div className="guided-probability">
+                <div>
+                  <strong>kooli</strong>
+                  <span>2 / 3</span>
+                </div>
+                <div className="guided-probability-bar"><i style={{ width: "66.7%" }} /></div>
+                <b>67%</b>
+              </div>
+              <div className="guided-probability">
+                <div>
+                  <strong>koju</strong>
+                  <span>1 / 3</span>
+                </div>
+                <div className="guided-probability-bar"><i style={{ width: "33.3%" }} /></div>
+                <b>33%</b>
+              </div>
+            </div>
+            <div className="guided-formula">
+              <small>{copy.probability}</small>
+              <strong>kooli: 2 ÷ 3 = 0.67 = 67%</strong>
+              <strong>koju: 1 ÷ 3 = 0.33 = 33%</strong>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="guided-stage">
+            <div className="guided-question">
+              <div className="guided-context-inline">
+                <span>Mari</span><span>läks</span><strong>→ ?</strong>
+              </div>
+              <h3>{copy.question}</h3>
+              <small>{copy.choose}</small>
+              <div className="guided-answer-buttons">
+                <button
+                  type="button"
+                  className={answer === "kooli" ? "selected correct" : ""}
+                  onClick={() => setAnswer("kooli")}
+                >
+                  kooli <span>67%</span>
+                </button>
+                <button
+                  type="button"
+                  className={answer === "koju" ? "selected" : ""}
+                  onClick={() => setAnswer("koju")}
+                >
+                  koju <span>33%</span>
+                </button>
+              </div>
+              {answer && (
+                <p className={answer === "kooli" ? "guided-feedback correct" : "guided-feedback"}>
+                  {answer === "kooli" ? copy.correct : copy.possible}
+                </p>
+              )}
+            </div>
+            <div className="guided-summary">
+              <strong>{copy.summary}</strong>
+              <p>{copy.labHelp}</p>
+              <button type="button" className="button button-primary" onClick={onOpenLab}>
+                {copy.lab} <span>→</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="guided-navigation">
+          <button
+            type="button"
+            className="button button-quiet"
+            disabled={step === 0}
+            onClick={() => goTo(step - 1)}
+          >
+            {copy.previous}
+          </button>
+          {step < steps.length - 1 && (
+            <button
+              type="button"
+              className="button button-primary"
+              onClick={() => goTo(step + 1)}
+            >
+              {copy.next} <span>→</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function App() {
   const [language, setLanguage] = useState<"et" | "en">("et");
+  const [mode, setMode] = useState<"guided" | "lab">("guided");
   const t = translations[language];
   const [text, setText] = useState(initialText);
   const [analyzedText, setAnalyzedText] = useState(initialText);
@@ -359,7 +679,11 @@ function App() {
     if (!candidates.length) return false;
     const tempered = applyTemperature(candidates, temperature);
     const selected =
-      strategy === "greedy" ? candidates[0] : sampleWeighted(tempered, true);
+      strategy === "greedy"
+        ? candidates[0]
+        : strategy === "weighted"
+          ? sampleWeighted(candidates)
+          : sampleWeighted(tempered, true);
     if (!selected) return false;
     const probability =
       strategy === "temperature"
@@ -372,7 +696,7 @@ function App() {
         context: ctx.join(" "),
         selected: selected.token,
         probability,
-        candidates: tempered,
+        candidates: strategy === "temperature" ? tempered : candidates,
       },
     ]);
     return true;
@@ -391,7 +715,11 @@ function App() {
       if (!candidates.length) break;
       const tempered = applyTemperature(candidates, temperature);
       const selected =
-        strategy === "greedy" ? candidates[0] : sampleWeighted(tempered, true);
+        strategy === "greedy"
+          ? candidates[0]
+          : strategy === "weighted"
+            ? sampleWeighted(candidates)
+            : sampleWeighted(tempered, true);
       if (!selected) break;
       const probability =
         strategy === "temperature"
@@ -402,7 +730,7 @@ function App() {
         context: ctx.join(" "),
         selected: selected.token,
         probability,
-        candidates: tempered,
+        candidates: strategy === "temperature" ? tempered : candidates,
       });
       current = [...current, selected.token];
     }
@@ -447,11 +775,31 @@ function App() {
               <option value="en">English</option>
             </select>
           </label>
+          <div className="mode-switch" role="group" aria-label={language === "et" ? "Õpperežiim" : "Learning mode"}>
+            <button
+              type="button"
+              className={mode === "guided" ? "active" : ""}
+              onClick={() => setMode("guided")}
+            >
+              {language === "et" ? "Õpi samm-sammult" : "Learn step by step"}
+            </button>
+            <button
+              type="button"
+              className={mode === "lab" ? "active" : ""}
+              onClick={() => setMode("lab")}
+            >
+              {language === "et" ? "Katseta ise" : "Experiment"}
+            </button>
+          </div>
           <div className="top-note">
             <span className="live-dot" /> {t.browser}
           </div>
         </div>
       </header>
+      {mode === "guided" ? (
+        <GuidedLearning language={language} onOpenLab={() => setMode("lab")} />
+      ) : (
+        <>
       <section className="hero" id="top">
         <div className="hero-copy">
           <div className="eyebrow">
@@ -559,7 +907,7 @@ function App() {
               label={t.tokens}
             />
             <Stat
-              value={new Set(tokenize(text)).size.toLocaleString()}
+              value={new Set(tokenize(text, ignoreCase)).size.toLocaleString()}
               label={t.unique}
             />
             <Stat
@@ -757,9 +1105,9 @@ function App() {
                   {example.map((token, j) => (
                     <span
                       className={
-                        j >= example.length - 4 && j < example.length - 3
+                        j < contextLength
                           ? "highlight-context"
-                          : j === example.length - 3
+                          : j === contextLength
                             ? "highlight-next"
                             : ""
                       }
@@ -1191,6 +1539,8 @@ function App() {
         <span>{t.footer}</span>
         <a href="#top">{t.back} ↑</a>
       </footer>
+        </>
+      )}
     </main>
   );
 }
